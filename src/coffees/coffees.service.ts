@@ -14,11 +14,21 @@ export class CoffeesService {
     }
 
     findAll() {
-        return this.coffeeRepository.find();
+        /**
+         *       We labelled the 'flavors' column as our RELATION for Coffee, and now we use it here to eager load the 'flavors'
+         *  for the coffee entity that we retrieve
+         *
+         *  Basically the RELATION we want to eager load when we retrieve the entity, is the 'flavors' one. Named like this in the Coffee entity
+         */
+        return this.coffeeRepository.find(
+            {relations: ['flavors']}
+        );
     }
 
     async findOne(id: string) {
-        const coffee = await this.coffeeRepository.findOne(id);
+        const coffee = await this.coffeeRepository.findOne(id,
+            {relations: ['flavors']}
+        );
         if (!coffee) {
             throw new HttpException(`Coffee #${id} not found`, HttpStatus.NOT_FOUND);
         }
