@@ -12,10 +12,14 @@ async function bootstrap() {
          *
          * forbidNonWhitelisted: true => gives us the option to STOP a request if any non white listed properties are present
          *                              throwing an errors instead
+         *
+         * transform: true    => - helps us serialize the JSON payloads that we receive, instantiating the needed object
+         *                       - it also performs primitive type conversions for things such and booleans and numbers
+         *
          */
         whitelist: true,
-        forbidNonWhitelisted: true
-
+        forbidNonWhitelisted: true,
+        transform: true
       })
   );
   await app.listen(3000);
