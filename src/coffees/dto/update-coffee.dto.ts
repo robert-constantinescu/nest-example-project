@@ -1,7 +1,9 @@
-export class UpdateCoffeeDto {
-    // the readonly keyword helps maintain immutability for the CreateCoffeeDto objects
-    //the questions marks here means that the property is optional
-    readonly name?: string;
-    readonly brand?: string;
-    readonly flavors?: string[];
-}
+import {PartialType} from "@nestjs/mapped-types";
+import {CreateCoffeeDto} from "./create-coffee.dto";
+
+
+/**
+ * - PartialType(CreateCoffeeDto)  => adds all the fields from the provided class(CreateCoffeeDto) as optional
+ * and it also inherits the validation rules defined in the CreateCoffeeDto
+ */
+export class UpdateCoffeeDto extends PartialType(CreateCoffeeDto){}
