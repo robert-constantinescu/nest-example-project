@@ -1,47 +1,61 @@
 import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
 import {Coffee} from "./entities/coffee.entity";
+import {InjectRepository} from "@nestjs/typeorm";
+import {Repository} from "typeorm";
+import {async} from "rxjs";
+import {CreateCoffeeDto} from "./dto/create-coffee.dto";
+import {UpdateCoffeeDto} from "./dto/update-coffee.dto";
 
 @Injectable()
 export class CoffeesService {
 
-    private coffees: Coffee[] = [
-        {
-            id: 1,
-            name: 'Jamaica Blue',
-            brand: 'The Brand',
-            flavors: ['expensive', 'very expensive']
-        }
-    ];
-
-    findAll() {
-        return this.coffees;
+    constructor(
+        @InjectRepository(Coffee) private readonly coffeeRepository: Repository<Coffee>) {
     }
 
-    findOne(id: string) {
-        const coffee = this.coffees.find(item => item.id === +id);
+    findAll() {
+        return this.coffeeRepository.find();
+    }
+
+    async findOne(id: string) {
+        const coffee = await this.coffeeRepository.findOne(id);
         if (!coffee) {
             throw new HttpException(`Coffee #${id} not found`, HttpStatus.NOT_FOUND);
         }
         return coffee;
     }
 
-    create(createCoffeeDto: any) {
-        this.coffees.push(createCoffeeDto);
-        return createCoffeeDto;
+    create(createCoffeeDto: CreateCoffeeDto) {
+        /**
+         * 1. we are creating an instance of the Coffee entity from the 'createCoffeeDto'
+         * 2. We save the new created coffee entity
+         */
+        const coffee = this.coffeeRepository.create(createCoffeeDto);
+        return this.coffeeRepository.save(coffee);
     }
 
-    update(id: string, updateCoffeeDto: any) {
-        const existingCoffee = this.findOne(id);
-        if (existingCoffee) {
-            // update the exsiting coffee
+    async update(id: string, updateCoffeeDto: UpdateCoffeeDto) {
+        /**
+         * 1. 'preload()' method creates a new entity, based on the object pased into it
+         *          - preload() first looks to see if an entity already exists in the DB and if it exists it will retrieve
+         *          the object and everything related to it
+         * 2. If an entity exists already preload() replace all the values with the new ones pased in our updateCoffeeDto
+         * 3. preload() will return UNDEFINED if the ID OF the ENTITY was NOT FOUND in DB
+         *
+         */
+        const existingCoffee = await this.coffeeRepository.preload({
+            id: +id,
+            ...updateCoffeeDto
+        });
+        if (!existingCoffee) {
+            throw new HttpException(`Coffee with #${id} not found`, HttpStatus.NOT_FOUND);
         }
+        return this.coffeeRepository.save(existingCoffee);
     }
 
-    remove(id: string) {
-        const coffeeIndex = this.coffees.findIndex(item => item.id === +id);
-        if (coffeeIndex >= 0) {
-            this.coffees.splice(coffeeIndex, 1);
-        }
+    async remove(id: string) {
+        const coffee = await this.coffeeRepository.findOne(id);
+        return this.coffeeRepository.remove(coffee);
     }
 
 
