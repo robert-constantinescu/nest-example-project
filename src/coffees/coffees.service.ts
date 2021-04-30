@@ -5,12 +5,14 @@ import {Repository} from "typeorm";
 import {async} from "rxjs";
 import {CreateCoffeeDto} from "./dto/create-coffee.dto";
 import {UpdateCoffeeDto} from "./dto/update-coffee.dto";
+import {Flavor} from "./entities/flavor.entity";
 
 @Injectable()
 export class CoffeesService {
 
     constructor(
-        @InjectRepository(Coffee) private readonly coffeeRepository: Repository<Coffee>) {
+        @InjectRepository(Coffee) private readonly coffeeRepository: Repository<Coffee>,
+        @InjectRepository(Flavor) private readonly flavorRepository: Repository<Flavor>) {
     }
 
     findAll() {
@@ -35,12 +37,21 @@ export class CoffeesService {
         return coffee;
     }
 
-    create(createCoffeeDto: CreateCoffeeDto) {
+    async create(createCoffeeDto: CreateCoffeeDto) {
         /**
          * 1. we are creating an instance of the Coffee entity from the 'createCoffeeDto'
          * 2. We save the new created coffee entity
+         * 3. using `await` in combination with Promise.all() awaits until the entire array of Promises finishes, before executing further code
          */
-        const coffee = this.coffeeRepository.create(createCoffeeDto);
+        const flavors = await Promise.all(
+            createCoffeeDto.flavors.map(name => this.preloadFlavorByName(name))
+        );
+
+        const coffee = this.coffeeRepository.create({
+            ...createCoffeeDto,
+            // this overrides the flavors property, in this case they both have the same name
+            flavors
+        });
         return this.coffeeRepository.save(coffee);
     }
 
@@ -51,11 +62,19 @@ export class CoffeesService {
          *          the object and everything related to it
          * 2. If an entity exists already preload() replace all the values with the new ones pased in our updateCoffeeDto
          * 3. preload() will return UNDEFINED if the ID OF the ENTITY was NOT FOUND in DB
-         *
+         * 4. in the flavors, first we check if the flavors property is defined(since for update is optional): updateCoffeeDto.flavors
+         *        otherwise we would get an error because the `flavors`property would be undefined
          */
+        const flavors =
+            updateCoffeeDto.flavors &&
+            (await Promise.all(
+                updateCoffeeDto.flavors.map(name => this.preloadFlavorByName(name))
+            ));
+
         const existingCoffee = await this.coffeeRepository.preload({
             id: +id,
-            ...updateCoffeeDto
+            ...updateCoffeeDto,
+            flavors
         });
         if (!existingCoffee) {
             throw new HttpException(`Coffee with #${id} not found`, HttpStatus.NOT_FOUND);
@@ -66,6 +85,14 @@ export class CoffeesService {
     async remove(id: string) {
         const coffee = await this.coffeeRepository.findOne(id);
         return this.coffeeRepository.remove(coffee);
+    }
+
+    private async preloadFlavorByName(name: string): Promise<Flavor> {
+        const existingFlavor = await this.flavorRepository.findOne({ name });
+        if (existingFlavor) {
+            return existingFlavor;
+        }
+        return this.flavorRepository.create({ name });
     }
 
 
