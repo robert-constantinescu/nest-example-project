@@ -5,14 +5,8 @@ import {TypeOrmModule} from "@nestjs/typeorm";
 import {Coffee} from "./entities/coffee.entity";
 import {Flavor} from "./entities/flavor.entity";
 import {Event} from "../events/entities/event.entity";
+import {Connection} from "typeorm";
 
-@Injectable()
-export class CoffeeBrandsFactory {
-    create() {
-        /* do something */
-        return ['buddy brew', 'lavazza'];
-    }
-}
 
 @Module({
     controllers: [CoffeesController],
@@ -61,16 +55,30 @@ export class CoffeeBrandsFactory {
      *       useFactory: (brandsFactory: CoffeeBrandsFactory) => brandsFactory.create()
      *       inject: [CoffeeBrandsFactory] // this is passed in the useFactory function, to use them how we need
      *   }
-     * --------------------------------------------------------------------------------------
+     * ----------------------------------------------------------------------------------------------------------------
+     * Asynchronous Providers
+     *       {
+     *         provide: 'COFFEE_BRANDS',
+     *           useFactory: async (connection: Connection): Promise<string[]> => {
+     *               //const coffeeBrands =  await connection.query('SELECT ...');
+     *               const coffeeBrands = await Promise.resolve(['lavazza', 'bio cafe']);
+     *              return coffeeBrands;
+     *          },
+     *          inject: [Connection]
+     *       }
+     *
      *
      */
     providers: [
         CoffeesService,
-        CoffeeBrandsFactory,
         {
             provide: 'COFFEE_BRANDS',
-            useFactory: (brandsFactory: CoffeeBrandsFactory) => brandsFactory.create(),
-            inject: [CoffeeBrandsFactory]
+            useFactory: async (connection: Connection): Promise<string[]> => {
+                //const coffeeBrands =  await connection.query('SELECT ...');
+                const coffeeBrands = await Promise.resolve(['lavazza', 'bio cafe']);
+                return coffeeBrands;
+            },
+            inject: [Connection]
         }
     ],
     imports: [TypeOrmModule.forFeature([Coffee, Flavor, Event])],
