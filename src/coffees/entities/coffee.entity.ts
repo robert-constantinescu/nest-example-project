@@ -14,6 +14,9 @@ export class Coffee {
     @Column()
     brand: string;
 
+    @Column({default: 0})
+    recommendations: number;
+
     /**
      * @JoinTable() specifies the OWNER side of the relationship.(in this case the Coffee)
      *
