@@ -61,7 +61,7 @@ export class CoffeeBrandsFactory {
      *       useFactory: (brandsFactory: CoffeeBrandsFactory) => brandsFactory.create()
      *       inject: [CoffeeBrandsFactory] // this is passed in the useFactory function, to use them how we need
      *   }
-     *
+     * --------------------------------------------------------------------------------------
      *
      */
     providers: [
