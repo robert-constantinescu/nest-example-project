@@ -6,6 +6,7 @@ import {async} from "rxjs";
 import {CreateCoffeeDto} from "./dto/create-coffee.dto";
 import {UpdateCoffeeDto} from "./dto/update-coffee.dto";
 import {Flavor} from "./entities/flavor.entity";
+import {PaginationQueryDto} from "../common/dto/pagination-query.dto";
 
 @Injectable()
 export class CoffeesService {
@@ -15,7 +16,7 @@ export class CoffeesService {
         @InjectRepository(Flavor) private readonly flavorRepository: Repository<Flavor>) {
     }
 
-    findAll() {
+    findAll(paginationQuery: PaginationQueryDto) {
         /**
          *       We labelled the 'flavors' column as our RELATION for Coffee, and now we use it here to eager load the 'flavors'
          *  for the coffee entity that we retrieve
@@ -23,7 +24,11 @@ export class CoffeesService {
          *  Basically the RELATION we want to eager load when we retrieve the entity, is the 'flavors' one. Named like this in the Coffee entity
          */
         return this.coffeeRepository.find(
-            {relations: ['flavors']}
+            {
+                relations: ['flavors'],
+                skip: paginationQuery.offset,
+                take: paginationQuery.limit
+            }
         );
     }
 
