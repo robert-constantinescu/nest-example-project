@@ -3,6 +3,7 @@ import {AppController} from './app.controller';
 import {AppService} from './app.service';
 import {CoffeesModule} from './coffees/coffees.module';
 import {TypeOrmModule} from "@nestjs/typeorm";
+import { CoffeeRatingModule } from './coffee-rating/coffee-rating.module';
 
 @Module({
   imports: [CoffeesModule,
@@ -17,7 +18,8 @@ import {TypeOrmModule} from "@nestjs/typeorm";
 
       //syncronize should NEVER be used IN  PRODUCTION MODE
       synchronize: true,
-    })
+    }),
+    CoffeeRatingModule
   ],
   controllers: [AppController],
   providers: [AppService],
