@@ -6,7 +6,9 @@ import {Coffee} from "./entities/coffee.entity";
 import {Flavor} from "./entities/flavor.entity";
 import {Event} from "../events/entities/event.entity";
 
-class MockCoffeeService {}
+class ConfigService {}
+class DevelopmentConfigService {}
+class ProductionConfigService {}
 
 @Module({
     controllers: [CoffeesController],
@@ -29,11 +31,22 @@ class MockCoffeeService {}
      *      constructor(
      *         @Inject('COFFEE_BRANDS') coffeeBrands: string[]
      *         )
+     * ----------------------------------------------------------------------------------------------------------------
+     * Class Providers
+     * {
+     *       provide: ConfigService,
+     *       useClass: process.env.NODE_ENV === 'development' ? DevelopmentConfigService: ProductionConfigService
+     *   },
+     *
      *
      *
      */
     providers: [
         CoffeesService,
+        {
+            provide: ConfigService,
+            useClass: process.env.NODE_ENV === 'development' ? DevelopmentConfigService: ProductionConfigService
+        },
         {provide: 'COFFEE_BRANDS', useValue: ['buddy brew', 'lavazza']}],
     imports: [TypeOrmModule.forFeature([Coffee, Flavor, Event])],
     exports: [CoffeesService]
