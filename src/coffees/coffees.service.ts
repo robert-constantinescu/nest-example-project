@@ -1,14 +1,24 @@
-import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
+import {HttpException, HttpStatus, Injectable, Scope} from '@nestjs/common';
 import {Coffee} from "./entities/coffee.entity";
 import {InjectRepository} from "@nestjs/typeorm";
 import {Connection, Repository} from "typeorm";
-import {async} from "rxjs";
 import {CreateCoffeeDto} from "./dto/create-coffee.dto";
 import {UpdateCoffeeDto} from "./dto/update-coffee.dto";
 import {Flavor} from "./entities/flavor.entity";
 import {PaginationQueryDto} from "../common/dto/pagination-query.dto";
 import {Event} from "../events/entities/event.entity";
 
+/**
+ * @Injectable({scope: Scope.REQUEST})
+ * it's important to REMEMBER that if you use the Scope.REQUEST, this option will PROPAGATE to ALL OF THE COMPONENTS that
+ * are using the CoffeeService:
+ *  e.g: If you have:
+ *          - a controller that is using the CoffeeService:
+ *          - and the CoffeeService has the Scope.REQUEST =>
+ *          => The CoffeeService and the Controller will be instantiated on each REQUEST
+ *
+ *  Using REQUEST SCOPED Providers will have an impact on application performance
+ */
 @Injectable()
 export class CoffeesService {
 
@@ -16,6 +26,7 @@ export class CoffeesService {
         @InjectRepository(Coffee) private readonly coffeeRepository: Repository<Coffee>,
         @InjectRepository(Flavor) private readonly flavorRepository: Repository<Flavor>,
         private readonly connection: Connection) {
+        console.log(`CoffeeService was instantiated ${this.constructor.prototype}`)
     }
 
     findAll(paginationQuery: PaginationQueryDto) {
