@@ -57,6 +57,8 @@ import {Connection} from "typeorm";
      *   }
      * ----------------------------------------------------------------------------------------------------------------
      * Asynchronous Providers
+     *  - basically here we firs wait for the coffee brands to be retrieved from the database and then we can use them
+     *  in any class based on the COFFEE_BRANDS token
      *       {
      *         provide: 'COFFEE_BRANDS',
      *           useFactory: async (connection: Connection): Promise<string[]> => {
