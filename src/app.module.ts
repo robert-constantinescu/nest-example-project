@@ -33,6 +33,8 @@ import appConfig from './config/app.config'
          *    And other options that you can find at a google search
          *
          *    example of options Object:
+         *    import appConfig from './config/app.config'
+         *    import * as Joi from './hapi/joi'
          *    {
          *        envFilePath: '.env',
          *        validationSchema: Joi.object({
