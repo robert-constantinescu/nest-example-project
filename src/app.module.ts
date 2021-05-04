@@ -9,6 +9,21 @@ import appConfig from './config/app.config'
 
 @Module({
   imports: [
+      //asyncronously loading the module so that the properties will be assigned after they are available.
+      // order of the imported modules matter. Using the async strategy, the order of the imported module will not matter anymore
+    TypeOrmModule.forRootAsync({
+      useFactory: () => ({
+        type: 'postgres',
+        host: process.env.DATABASE_HOST,
+        port: +process.env.DATABASE_PORT,
+        username: process.env.DATABASE_USER,
+        password: process.env.DATABASE_PASSWORD,
+        database: process.env.DATABASE_NAME,
+        autoLoadEntities: true,
+        //syncronize should NEVER be used IN  PRODUCTION MODE
+        synchronize: true,
+      })
+    }),
     ConfigModule.forRoot(
         /**
          * npm i @nestjs/config   -needs to be installed to use the ConfigModule
@@ -49,17 +64,6 @@ import appConfig from './config/app.config'
         }
     ),
     CoffeesModule,
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: process.env.DATABASE_HOST,
-      port: +process.env.DATABASE_PORT,
-      username: process.env.DATABASE_USER,
-      password: process.env.DATABASE_PASSWORD,
-      database: process.env.DATABASE_NAME,
-      autoLoadEntities: true,
-      //syncronize should NEVER be used IN  PRODUCTION MODE
-      synchronize: true,
-    }),
     CoffeeRatingModule,
   ],
   controllers: [AppController],
