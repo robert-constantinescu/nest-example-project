@@ -5,7 +5,7 @@ import {CoffeesModule} from './coffees/coffees.module';
 import {TypeOrmModule} from "@nestjs/typeorm";
 import { CoffeeRatingModule } from './coffee-rating/coffee-rating.module';
 import {ConfigModule} from "@nestjs/config";
-import * as Joi from "@hapi/joi";
+import appConfig from './config/app.config'
 
 @Module({
   imports: [
@@ -24,17 +24,26 @@ import * as Joi from "@hapi/joi";
          *    - let the app know what are the mandatory configuration variable that need to be provided for the
          *    application to start properly.
          *    - This is done with the help of 2 other dependencies: npm i @hapi/joi  &  npm i --save-dev @types/hapi__joi
+         *    - import * as Joi from "@hapi/joi";
          *    - Below we are requiring the DATABASE_HOST & DATABASE_PORT to be provided in the configuration file(e.g: .env)
          *
+         * - load:
+         *    -can load a configuration typescript file where we can have a configuration logic
          *
          *    And other options that you can find at a google search
+         *
+         *    example of options Object:
+         *    {
+         *        envFilePath: '.env',
+         *        validationSchema: Joi.object({
+         *           DATABASE_HOST: Joi.required(),
+         *           DATABASE_PORT: Joi.number().default(5432)
+         *        }),
+         *        load: [appConfig]
+         *    }
          */
         {
-          envFilePath: '.env',
-          validationSchema: Joi.object({
-            DATABASE_HOST: Joi.required(),
-            DATABASE_PORT: Joi.number().default(5432)
-          })
+          load: [appConfig]
         }
     ),
     CoffeesModule,

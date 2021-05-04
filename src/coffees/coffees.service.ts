@@ -29,7 +29,7 @@ export class CoffeesService {
         private readonly connection: Connection,
         private readonly configService: ConfigService ) {
         console.log(`CoffeeService was instantiated ${this.constructor.prototype}`)
-        const databaseHost = this.configService.get<string>('DATABASE_HOST', 'defaultHost');
+        const databaseHost = this.configService.get<string>('database.host', 'defaultHost');
         console.log(`databaseHost: ${databaseHost} `);
     }
 
