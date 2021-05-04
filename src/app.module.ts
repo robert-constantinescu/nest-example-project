@@ -11,6 +11,8 @@ import * as Joi from "@hapi/joi";
   imports: [
     ConfigModule.forRoot(
         /**
+         * npm i @nestjs/config   -needs to be installed to use the ConfigModule
+         *
          * Here you can pass an object with options and configure for example:
          *  -envFilePath:
          *    - the path to the .env file:
