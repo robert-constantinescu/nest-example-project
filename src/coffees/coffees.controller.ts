@@ -29,14 +29,14 @@ export class CoffeesController {
     }
 
     @Get(':id')
-    findOneAllParams(@Param(ParseIntPipe) params) {
-        return this.coffeeService.findOne(params.id);
-    }
-
-    @Get(':id')
     findOne(@Param('id', ParseIntPipe) id) {
         console.log(id);
         return this.coffeeService.findOne(id);
+    }
+
+    @Get(':id')
+    findOneAllParams(@Param(ParseIntPipe) params) {
+        return this.coffeeService.findOne(params.id);
     }
 
     @Post()
