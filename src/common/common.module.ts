@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
-import {APP_GUARD} from "@nestjs/core";
+import {APP_GUARD, APP_INTERCEPTOR} from "@nestjs/core";
 import {ApiKeyGuard} from "./guards/api-key.guard";
 import {ConfigModule} from "@nestjs/config";
+import {WrapResponseInterceptor} from "./interceptors/wrap-response.interceptor";
 
 @Module({
     imports: [ConfigModule],
@@ -11,9 +12,13 @@ import {ConfigModule} from "@nestjs/config";
          * GLOBAL GUARDS that DEPEND on other CLASSES must be DECLARED in a MODULE
          *
          */
+        // {
+        //     provide: APP_GUARD,
+        //     useClass: ApiKeyGuard
+        // },
         {
-            provide: APP_GUARD,
-            useClass: ApiKeyGuard
+            provide: APP_INTERCEPTOR,
+            useClass: WrapResponseInterceptor
         }
     ]
 })

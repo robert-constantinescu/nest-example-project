@@ -27,7 +27,6 @@ export class CoffeesController {
         return 'This action returns all the flavours';
     }
 
-    @Public()
     @Get(':id')
     findOneAllParams(@Param() params) {
         return this.coffeeService.findOne(params.id);
