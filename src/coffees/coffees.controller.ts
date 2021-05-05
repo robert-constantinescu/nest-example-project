@@ -1,21 +1,20 @@
-import {Body, Controller, Delete, Get, Inject, Param, Patch, Post, Query} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Param, Patch, Post, Query, SetMetadata} from '@nestjs/common';
 import {CoffeesService} from "./coffees.service";
 import {CreateCoffeeDto} from "./dto/create-coffee.dto";
 import {UpdateCoffeeDto} from "./dto/update-coffee.dto";
 import {PaginationQueryDto} from "../common/dto/pagination-query.dto";
-import {REQUEST} from "@nestjs/core";
-import {Request} from "express";
+import {Public} from "../common/decorators/public.decorator";
 
 @Controller('coffees')
 export class CoffeesController {
 
     constructor(
-        private readonly coffeeService: CoffeesService,
-        //the request object will have us access to data from the incoming request
-        @Inject(REQUEST) private readonly request: Request) {
+        private readonly coffeeService: CoffeesService
+    ) {
         console.log(`CoffeeController was instantiated`)
     }
 
+    @Public()
     @Get()
     findAll(@Query() paginationQuery: PaginationQueryDto) {
         // example url: /coffees?limit=20&offset=10
@@ -28,6 +27,7 @@ export class CoffeesController {
         return 'This action returns all the flavours';
     }
 
+    @Public()
     @Get(':id')
     findOneAllParams(@Param() params) {
         return this.coffeeService.findOne(params.id);

@@ -1,4 +1,4 @@
-import {HttpException, HttpStatus, Inject, Injectable, Scope} from '@nestjs/common';
+import {HttpException, HttpStatus, Inject, Injectable} from '@nestjs/common';
 import {Coffee} from "./entities/coffee.entity";
 import {InjectRepository} from "@nestjs/typeorm";
 import {Connection, Repository} from "typeorm";
@@ -20,6 +20,10 @@ import coffeeConfig from './config/coffees.config';
  *          => The CoffeeService and the Controller will be instantiated on each REQUEST
  *
  *  Using REQUEST SCOPED Providers will have an impact on application performance
+ *
+ * If you inject the request object . It will gave us access to data from the incoming request, but it will instantiate
+ * the component tied to it every time
+ *  constructor(  @Inject(REQUEST) private readonly request: Request ){}
  */
 @Injectable()
 export class CoffeesService {

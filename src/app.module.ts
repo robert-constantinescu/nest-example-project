@@ -1,4 +1,4 @@
-import {Module} from '@nestjs/common';
+import {Module, ValidationPipe} from '@nestjs/common';
 import {AppController} from './app.controller';
 import {AppService} from './app.service';
 import {CoffeesModule} from './coffees/coffees.module';
@@ -6,6 +6,8 @@ import {TypeOrmModule} from "@nestjs/typeorm";
 import { CoffeeRatingModule } from './coffee-rating/coffee-rating.module';
 import {ConfigModule} from "@nestjs/config";
 import appConfig from './config/app.config'
+import {APP_PIPE} from "@nestjs/core";
+import { CommonModule } from './common/common.module';
 
 @Module({
   imports: [
@@ -65,8 +67,20 @@ import appConfig from './config/app.config'
     ),
     CoffeesModule,
     CoffeeRatingModule,
+    CommonModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+      AppService,
+    {
+      /**
+       * APP_PIPE is a special token imported from NestJS.
+       * Providing a ValidationPipe in this manner, allows Nest instantiating the ValidationPipe within the SCOPE of MODULE
+       * and once created, it register it as a GLOBAL PIPE.
+       */
+      provide: APP_PIPE,
+      useClass: ValidationPipe
+    }
+  ],
 })
 export class AppModule {}
