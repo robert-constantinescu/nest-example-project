@@ -5,6 +5,7 @@ import {UpdateCoffeeDto} from "./dto/update-coffee.dto";
 import {PaginationQueryDto} from "../common/dto/pagination-query.dto";
 import {Public} from "../common/decorators/public.decorator";
 import {ParseIntPipe} from "../common/pipes/parse-int.pipe";
+import {Protocol} from "../common/decorators/protocol.decorator";
 
 @Controller('coffees')
 export class CoffeesController {
@@ -17,8 +18,9 @@ export class CoffeesController {
 
     @Public()
     @Get()
-    async findAll(@Query() paginationQuery: PaginationQueryDto) {
+    async findAll(@Query() paginationQuery: PaginationQueryDto, @Protocol('https') protocol: string) {
         // example url: /coffees?limit=20&offset=10
+        console.log(protocol);
         const {limit, offset} = paginationQuery;
         return this.coffeeService.findAll(paginationQuery);
     }
@@ -29,7 +31,7 @@ export class CoffeesController {
     }
 
     @Get(':id')
-    findOne(@Param('id', ParseIntPipe) id) {
+    findOne(@Param('id', ParseIntPipe) id)  {
         console.log(id);
         return this.coffeeService.findOne(id);
     }
